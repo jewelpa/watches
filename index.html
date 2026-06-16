@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jewelpa — Diamond Watch Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold-light:#E8D5A3;--gold-dark:#8B6914;--gold-glow:rgba(201,168,76,0.18);
+  --cream:#FAF7F2;--ink:#1A1714;--muted:#7A7265;
+  --border:rgba(201,168,76,0.28);--white:#FFFFFF;--surface:#F5F1EA;--danger:#C0392B;
+}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+/* ── HEADER ── */
+.site-header{background:linear-gradient(135deg,#1A1714 0%,#231f1a 60%,#1A1714 100%);padding:0 48px;display:flex;align-items:center;justify-content:space-between;height:68px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(201,168,76,0.35);box-shadow:0 4px 32px rgba(0,0,0,0.45)}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--gold);letter-spacing:3px;text-transform:uppercase}
+.logo-sub{font-size:9px;letter-spacing:3px;color:var(--gold-light);text-transform:uppercase;margin-top:-2px;opacity:.7}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn-gold{background:linear-gradient(135deg,#C9A84C,#dbb954,#C9A84C);color:var(--ink);border:none;padding:9px 22px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 2px 14px rgba(201,168,76,0.35)}
+.btn-gold:hover{background:linear-gradient(135deg,#dbb954,#e8c860,#dbb954);box-shadow:0 4px 20px rgba(201,168,76,0.5)}.btn-gold:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,0.55);padding:9px 22px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{background:rgba(201,168,76,.12);border-color:var(--gold)}
+
+/* ── TABS ── */
+.tabs{background:linear-gradient(135deg,#1A1714 0%,#231f1a 100%);padding:0 48px;display:flex;border-bottom:1px solid rgba(201,168,76,.2)}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,.38);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:13px 18px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn:hover{color:var(--gold-light)}.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── VIEWS ── */
+.view{display:none}.view.active{display:block}
+
+/* ── CATALOG TOOLBAR ── */
+.catalog-toolbar{padding:20px 48px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{background:var(--white);border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.filter-btn:hover,.filter-btn.active{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+.stats-row{font-size:11px;color:var(--muted);letter-spacing:1px}
+
+/* ── CATALOG GRID ── */
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px;padding:0 48px 48px}
+.watch-card{background:var(--white);position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.12);transition:all .25s;box-shadow:0 2px 16px rgba(0,0,0,0.06)}
+.watch-card:hover{transform:translateY(-4px);box-shadow:0 14px 44px rgba(0,0,0,.12),0 0 0 1px rgba(201,168,76,.2)}
+.watch-card.featured::after{content:'FEATURED';position:absolute;top:14px;right:-24px;background:linear-gradient(90deg,#C9A84C,#dbb954);color:var(--ink);font-size:8px;font-weight:700;letter-spacing:1.5px;padding:4px 30px;transform:rotate(45deg);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.card-img{width:100%;height:260px;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.watch-card:hover .card-img img{transform:scale(1.04)}
+.card-img-ph{width:100%;height:260px;background:linear-gradient(145deg,#f0ebe0,#e8e0d0);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.card-body{padding:14px 16px 13px;border-top:1px solid rgba(201,168,76,.1)}
+.card-brand{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.card-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.2}
+.card-ref{font-size:10px;color:var(--muted);letter-spacing:.8px;margin-bottom:12px}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.card-price{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink)}
+.card-acts{display:flex;gap:6px}
+.icon-btn{width:30px;height:30px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;color:var(--muted)}
+.icon-btn:hover{border-color:var(--danger);color:var(--danger)}.icon-btn.edit:hover{border-color:var(--gold);color:var(--gold)}
+.empty{text-align:center;padding:80px;grid-column:1/-1}
+.empty h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--muted);margin-bottom:8px}
+.empty p{font-size:12px;color:var(--muted)}
+
+/* ── PDF PREVIEW TAB ── */
+#view-pdf{padding:20px 28px;background:linear-gradient(180deg,#e8e4dc 0%,#f0ece4 100%);min-height:100vh}
+.pdf-notice{background:var(--ink);color:var(--gold-light);padding:12px 22px;font-size:12px;margin-bottom:24px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
+.pdf-notice strong{color:var(--gold)}
+#pdf-pages-wrap{display:flex;flex-direction:column;gap:28px;align-items:center}
+
+/* ══════════════════════════════════
+   SLIDE: 1280 x 720 px (16:9)
+══════════════════════════════════ */
+.slide{width:1280px;height:720px;overflow:hidden;position:relative;flex-shrink:0;box-shadow:0 8px 48px rgba(0,0,0,.38),0 2px 8px rgba(0,0,0,.2),0 0 0 1px rgba(201,168,76,.12)}
+
+/* ── SLIDE: COVER ── */
+.sl-cover{background:radial-gradient(ellipse at 60% 40%,#2a2319 0%,#1A1714 55%,#130f0c 100%);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sl-cover-stripe{position:absolute;inset:0;opacity:.03;background-size:28px 28px}
+.sl-cover-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(201,168,76,0.08) 0%,transparent 70%);pointer-events:none}
+.sl-cover-border{position:absolute;inset:20px;border:1px solid rgba(201,168,76,.2);pointer-events:none}
+.sl-cover-border2{position:absolute;inset:26px;border:1px solid rgba(201,168,76,.07);pointer-events:none}
+.sl-cover-inner{position:relative;z-index:2;text-align:center}
+.sl-cover-est{font-size:17px;letter-spacing:7px;color:#C9A84C;text-transform:uppercase;margin-bottom:22px;opacity:.7}
+.sl-cover-title{font-family:'Cormorant Garamond',serif;font-size:96px;font-weight:600;color:#C9A84C;letter-spacing:12px;text-transform:uppercase;line-height:1;margin-bottom:2px}
+.sl-cover-sub{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:rgba(255,255,255,.38);letter-spacing:3px;margin-bottom:36px}
+.sl-cover-rule{width:90px;height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:0 auto 22px;opacity:.7}
+.sl-cover-desc{font-size:15px;letter-spacing:4px;color:rgba(241, 241, 241, 0.25);text-transform:uppercase;margin-bottom:14px}
+.sl-cover-brands{font-size:15px;letter-spacing:3px;color:rgba(236, 236, 234, 0.45);text-transform:uppercase}
+.sl-cover-foot{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-size:15px;letter-spacing:4px;color:rgba(218, 211, 211, 0.815);text-transform:uppercase}
+.sl-cover-corner{position:absolute;width:40px;height:40px;opacity:.3}
+.sl-cover-corner.tl{top:30px;left:30px;border-top:1px solid #C9A84C;border-left:1px solid #C9A84C}
+.sl-cover-corner.tr{top:30px;right:30px;border-top:1px solid #C9A84C;border-right:1px solid #C9A84C}
+.sl-cover-corner.bl{bottom:30px;left:30px;border-bottom:1px solid #C9A84C;border-left:1px solid #C9A84C}
+.sl-cover-corner.br{bottom:30px;right:30px;border-bottom:1px solid #C9A84C;border-right:1px solid #C9A84C}
+
+/* ── SLIDE: INNER ── */
+.sl-inner{background:linear-gradient(160deg,#ffffff 0%,#faf7f2 40%,#f5f1ea 100%);display:flex;flex-direction:column;position:relative}
+.sl-inner::before{content:'';position:absolute;top:0;right:0;width:380px;height:380px;background:radial-gradient(ellipse at top right,rgba(201,168,76,0.06) 0%,transparent 65%);pointer-events:none}
+.sl-inner::after{content:'';position:absolute;bottom:0;left:0;width:280px;height:200px;background:radial-gradient(ellipse at bottom left,rgba(201,168,76,0.04) 0%,transparent 70%);pointer-events:none}
+.sl-header{display:flex;align-items:center;justify-content:space-between;padding:20px 48px 14px;border-bottom:1px solid rgba(201,168,76,.2);flex-shrink:0;position:relative;z-index:2;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 100%)}
+.sl-logo{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:600;color:#8B6914;letter-spacing:5px;text-transform:uppercase}
+.sl-pnum{font-size:15px;letter-spacing:2px;color:#a1a0a0;text-transform:uppercase}
+.sl-header-divider{display:flex;align-items:center;gap:14px;padding:0 48px 12px;position:relative;z-index:2}
+.sl-header-divider::before,.sl-header-divider::after{content:'';height:1px;flex:1;background:linear-gradient(90deg,transparent,#C9A84C,transparent)}
+.sl-header-divider span{width:7px;height:7px;transform:rotate(45deg);background:#C9A84C;flex:0 0 auto;box-shadow:0 0 0 2px rgba(201,168,76,.12)}
+.sl-hed{padding:16px 48px 0;flex-shrink:0;position:relative;z-index:2}
+.sl-hed-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;color:#1A1714;margin-bottom:3px}
+.sl-hed-bar{font-size:19px;letter-spacing:3px;color:#8B6914;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sl-hed-bar::after{content:'';display:inline-block;width:40px;height:1px;background:linear-gradient(90deg,#C9A84C,transparent)}
+
+/* 4-col grid inside slide */
+.sl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 48px 14px;flex:1;align-content:center;position:relative;z-index:2}
+.sl-item{border:1px solid rgba(201,168,76,.18);overflow:hidden;display:flex;flex-direction:column;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.05);position:relative;transition:all .2s}
+.sl-item::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(26,23,20,0.04) 100%);pointer-events:none;z-index:1}
+.sl-item-img{width:100%;height:275px;background:linear-gradient(145deg,#f5f1ea,#ede8df);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative}
+.sl-item-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(26,23,20,0.18) 100%);pointer-events:none}
+.sl-item-img img{width:100%;height:100%;object-fit:cover;display:block}
+.sl-item-body{padding:7px 11px 6px;flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#fff 0%,#faf7f2 100%)}
+.sl-item-brand{font-size:10px;letter-spacing:3px;color:#8B6914;text-transform:uppercase;margin-bottom:2px}
+.sl-item-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:#1A1714;margin-bottom:2px;line-height:1.12}
+.sl-item-ref{font-size:13px;color:#1111114d;letter-spacing:.6px;margin-bottom:6px}
+.sl-item-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(201,168,76,.15);padding-top:5px;margin-top:auto}
+.sl-item-price{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#1A1714}
+.badge-a{font-size:8px;letter-spacing:1.5px;color:#3a7d50;border:1px solid rgba(58,125,80,.3);padding:2px 7px;text-transform:uppercase;background:rgba(58,125,80,.06)}
+.badge-r{font-size:8px;letter-spacing:1.5px;color:#8B6914;border:1px solid rgba(201,168,76,.4);padding:2px 7px;text-transform:uppercase;background:rgba(201,168,76,.06)}
+.badge-s{font-size:8px;letter-spacing:1.5px;color:#aaa;border:1px solid #ddd;padding:2px 7px;text-transform:uppercase;background:rgba(0,0,0,.03)}
+
+/* Side stripe on slide */
+.sl-side-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,transparent,#C9A84C 30%,#C9A84C 70%,transparent);opacity:.4}
+
+/* ── SLIDE: BACK COVER ── */
+.sl-back{background:radial-gradient(ellipse at 40% 55%,#262018 0%,#1A1714 55%,#100d0b 100%) !important;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px;position:relative}
+.sl-back-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:450px;background:radial-gradient(ellipse,rgba(201,168,76,0.07) 0%,transparent 65%);pointer-events:none}
+.sl-back-logo{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:600;color:#C9A84C;letter-spacing:7px;text-transform:uppercase;margin-bottom:6px}
+.sl-back-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:rgba(255,255,255,.32);margin-bottom:36px;letter-spacing:1px}
+.sl-back-rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:0 auto 28px;opacity:.6}
+.sl-back-contacts{display:flex;gap:64px;justify-content:center;position:relative;z-index:2}
+.sl-back-col{text-align:left}
+.sl-back-row{display:flex;gap:12px;font-size:13px;color:rgba(255,255,255,.45);margin-bottom:10px;align-items:baseline}
+.sl-back-row b{color:#E8D5A3;font-size:9px;letter-spacing:2px;text-transform:uppercase;min-width:56px}
+.sl-back-copy{position:absolute;bottom:32px;font-size:12px;letter-spacing:3px;color:rgba(247, 240, 240, 0.336);text-transform:uppercase}
+.sl-back-divider{width:1px;background:linear-gradient(180deg,transparent,rgba(201,168,76,.25),transparent);align-self:stretch}
+
+/* ── MODAL ── */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(26,23,20,.88);z-index:200;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--white);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.4),0 0 0 1px rgba(201,168,76,.15)}
+.modal-hd{background:linear-gradient(135deg,#1A1714,#231f1a);padding:22px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.2)}
+.modal-hd-title{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--gold);letter-spacing:1px}
+.modal-hd-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;transition:color .2s}
+.modal-hd-close:hover{color:#fff}
+.modal-bd{padding:28px}
+.fg{margin-bottom:18px}
+.fl{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:500}
+.fi,.fs,.ft{width:100%;border:1px solid rgba(0,0,0,.12);padding:10px 13px;font-family:'Inter',sans-serif;font-size:13px;background:var(--cream);color:var(--ink);outline:none;transition:border-color .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(201,168,76,.1)}
+.ft{height:70px;resize:vertical}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.upload-zone{border:2px dashed rgba(201,168,76,.35);padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream);position:relative}
+.upload-zone:hover{border-color:var(--gold);background:#fff;box-shadow:inset 0 0 0 1px rgba(201,168,76,.1)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-txt{font-size:12px;color:var(--muted);pointer-events:none}
+.upload-prev{max-height:150px;max-width:100%;margin:0 auto;display:block}
+.upload-ico{font-size:26px;color:var(--gold);margin-bottom:7px}
+.modal-ft{padding:18px 30px;border-top:1px solid rgba(201,168,76,.12);display:flex;justify-content:flex-end;gap:10px;background:linear-gradient(90deg,#faf7f2,#fff)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:linear-gradient(135deg,#1A1714,#231f1a);color:var(--gold);padding:13px 22px;font-size:12px;letter-spacing:1px;z-index:9999;transform:translateY(72px);opacity:0;transition:all .3s;border-left:3px solid var(--gold);pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.toast.show{transform:translateY(0);opacity:1}
+.print-only{display:none}
+@media print{
+  @page{size:landscape;margin:8mm}
+  body{background:#fff}
+  body *{visibility:hidden !important}
+  #view-pdf, #view-pdf *{visibility:visible !important}
+  .site-header,.tabs,.catalog-toolbar,.modal-backdrop,.toast{display:none !important}
+  #view-pdf{display:block !important;position:absolute;inset:0;padding:0 !important;min-height:100vh !important;background:#fff !important}
+  .pdf-notice{display:none !important}
+  #pdf-pages-wrap{gap:0 !important;align-items:stretch !important;display:block !important}
+  #pdf-pages-wrap .slide{break-after:page;page-break-after:always;box-shadow:none !important;transform:none !important;margin:0 auto 0 !important;page-break-inside:avoid;overflow:visible !important}
+  #pdf-pages-wrap .slide:last-child{break-after:auto;page-break-after:auto}
+}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--cream)}::-webkit-scrollbar-thumb{background:var(--gold-light)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo-area">
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+      <polygon points="20,3 37,13 37,27 20,37 3,27 3,13" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+      <polygon points="20,9 31,16 31,24 20,31 9,24 9,16" fill="none" stroke="#C9A84C" stroke-width="0.7" opacity="0.5"/>
+      <circle cx="20" cy="20" r="2.8" fill="#C9A84C" opacity="0.9"/>
+    </svg>
+    <div>
+      <div class="logo-text">Jewelpa</div>
+      <div class="logo-sub">Diamond &amp; Luxury Timepieces</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-ghost" onclick="openAddModal()">+ Add Watch</button>
+    <button class="btn-ghost" onclick="printCatalog()">Print / Save PDF</button>
+    <button class="btn-gold" id="dl-btn" onclick="downloadPDF()">&#11015; Download PDF</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab('catalog',this)">Catalog</button>
+  <button class="tab-btn" onclick="switchTab('pdf',this)">PDF Preview</button>
+</nav>
+
+<!-- CATALOG -->
+<div id="view-catalog" class="view active">
+  <div class="catalog-toolbar">
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterBrand('all',this)">All</button>
+      <button class="filter-btn" onclick="filterBrand('AP',this)">AP</button>
+      <button class="filter-btn" onclick="filterBrand('Bulgari',this)">Bulgari</button>
+      <button class="filter-btn" onclick="filterBrand('Cariter',this)">Cariter</button>
+      <button class="filter-btn" onclick="filterBrand('Cartier',this)">Cartier</button>
+      <button class="filter-btn" onclick="filterBrand('Casio',this)">Casio</button>
+      <button class="filter-btn" onclick="filterBrand('longines',this)">longines</button>
+      <button class="filter-btn" onclick="filterBrand('OMEGA',this)">OMEGA</button>
+      <button class="filter-btn" onclick="filterBrand('Omega',this)">Omega</button>
+      <button class="filter-btn" onclick="filterBrand('RM',this)">RM</button>
+      <button class="filter-btn" onclick="filterBrand('Rolex',this)">Rolex</button>
+      <button class="filter-btn" onclick="filterBrand('Versace',this)">Versace</button>
+    </div>
+    <div class="stats-row" id="catalog-stats"></div>
+  </div>
+  <div class="catalog-grid" id="catalog-grid"></div>
+</div>
+
+<!-- PDF PREVIEW -->
+<div id="view-pdf" class="view">
+  <div class="pdf-notice">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.5" y2="16" stroke-width="3"/></svg>
+    Each block = one PDF slide (1280&times;720 px, 16:9). Click <strong>Download PDF</strong> to export.
+  </div>
+  <div id="pdf-pages-wrap"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="modal-title">Add New Watch</span>
+      <button class="modal-hd-close" onclick="closeModal()">&#215;</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="edit-id">
+      <div class="fg">
+        <label class="fl">Watch Image</label>
+        <div class="upload-zone">
+          <input type="file" id="img-upload" accept="image/*" onchange="handleImg(event)">
+          <div id="upload-ph"><div class="upload-ico">&#9672;</div><div class="upload-txt">Click to upload watch photo</div><div class="upload-txt" style="font-size:10px;margin-top:3px;opacity:.6">JPG, PNG, WEBP</div></div>
+          <img class="upload-prev" id="img-prev" style="display:none" alt="">
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Brand *</label>
+          <select class="fs" id="f-brand">
+            <option value="">Select Brand</option>
+            <option>AP</option><option>Bulgari</option><option>Cariter</option>
+            <option>Cartier</option><option>Casio</option><option>longines</option>
+            <option>OMEGA</option><option>Omega</option><option>RM</option>
+            <option>Rolex</option><option>Versace</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Model / Collection *</label><input class="fi" id="f-name" type="text" placeholder="e.g. Royal Oak Concept"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Reference No.</label><input class="fi" id="f-ref" type="text" placeholder="e.g. AP-15400ST"></div>
+        <div class="fg"><label class="fl">Price *</label><input class="fi" id="f-price" type="text" placeholder="e.g. Rs.45,00,000"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Case Material</label><input class="fi" id="f-material" type="text" placeholder="e.g. 18K White Gold"></div>
+        <div class="fg"><label class="fl">Diamond Weight</label><input class="fi" id="f-diamond" type="text" placeholder="e.g. 5.2 ct"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Stock Status</label>
+          <select class="fs" id="f-status"><option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option></select>
+        </div>
+        <div class="fg"><label class="fl">Featured</label>
+          <select class="fs" id="f-featured"><option value="0">No</option><option value="1">Yes</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-gold" onclick="saveWatch()">Save Watch</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+var watches = [];
+const blobUrl = 'https://jsonblob.com/api/jsonBlob/019ecfc5-0383-7b1f-93b1-0e38bb147f8a';
+const defaultWatches = [
+  {id:'1',brand:'AP',name:'Moissanite AP Watch',ref:'AP-C01',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'1',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_AP_Watch.jpg?v=1775036936'},
+  {id:'2',brand:'Rolex',name:'Custom Green Pave Monopoly Dial Moissanite Datejust Watch',ref:'ROL-C02',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'1',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_3a5b0298-2446-4a2c-855b-4bc2e486795b.webp?v=1776408934'},
+  {id:'3',brand:'AP',name:'Men\'s VVS Moissanite AP Watch',ref:'AP-C03',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'1',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Men_s_VVS_Moissanite_AP_Watch.jpg?v=1775036833'},
+  {id:'4',brand:'Rolex',name:'Full Iced Out Moissanite Datejust Skydweller Watch',ref:'ROL-C04',price:'$95000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'1',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_13d6318f-2360-43d0-b1b0-70bc943043fa.webp?v=1776406598'},
+  {id:'5',brand:'Other',name:'Iced-Out Moissanite Bezel Mens Luxury Watches',ref:'OTH-C05',price:'$74900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'1',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_96fdd920-edd3-4d49-9f4a-de729545037b.webp?v=1776418603'},
+  {id:'6',brand:'Other',name:'Moissanite Iced Out luxury watches for men',ref:'OTH-C06',price:'$148800.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_22cf7b72-cdbd-4f68-a088-df80d8003326.webp?v=1776665956'},
+  {id:'7',brand:'Rolex',name:'Iced Out moissanite Yacht Master Watch',ref:'ROL-C07',price:'$77800.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_7b13ddd8-af6b-4a70-8d6e-a3c00c731a8a.webp?v=1776662694'},
+  {id:'8',brand:'Other',name:'Arabic Dial Moissanite Square Watch | 41 MM',ref:'OTH-C08',price:'$94100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Arabic_Dial_Moissanite_Square_Watch_41_MM.jpg?v=1775035110'},
+  {id:'9',brand:'Casio',name:'Luxury Moissanite Rubber Strap GA-2100 Watch',ref:'CAS-C09',price:'$75900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_4d4150bd-2baf-454f-b1b9-7cbe39234bb6.webp?v=1776484975'},
+  {id:'10',brand:'Other',name:'Stainless Steel Moissanite Watch',ref:'OTH-C10',price:'$91100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Stainless_Steel_Moissanite_Watch.jpg?v=1775040732'},
+  {id:'11',brand:'Other',name:'Bust Down Stainless Steel Moissanite Watch | 41 MM | Rose Gold Tone',ref:'OTH-C11',price:'$105500.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Bust_Down_Stainless_Steel_Moissanite_Watch.jpg?v=1775215611'},
+  {id:'12',brand:'AP',name:'Bust Down Ap Moissanite Watch',ref:'AP-C12',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Bust_Down_Ap_Moissanite_Watch.jpg?v=1775035193'},
+  {id:'13',brand:'AP',name:'AP Iced Out Moissanite Watch For Mens',ref:'AP-C13',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/AP_Iced_Out_Moissanite_Watch_For_Mens.jpg?v=1775034726'},
+  {id:'14',brand:'Casio',name:'Iced-out Moissanite Black Dial DW-5600 watch',ref:'CAS-C14',price:'$74900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_078460c7-0cc1-49f6-b818-6696a9a8acea.webp?v=1776421283'},
+  {id:'15',brand:'Other',name:'VVS Moissanite Diamond Watch In Two Tone',ref:'OTH-C15',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/VVS_Moissanite_Diamond_Watch_In_Two_Tone.jpg?v=1775040935'},
+  {id:'16',brand:'Other',name:'Black Diamond Watch | 41 mm',ref:'OTH-C16',price:'$478000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_654f9aa5-1113-4d9d-9add-0de6b6a9f27d.webp?v=1776489424'},
+  {id:'17',brand:'Other',name:'Sky Blue Dial Moissanite Rubber Strap  Iced Out Watch For Men',ref:'OTH-C17',price:'$72000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_a3c4d73c-8f29-416d-bd51-0342d0075182.webp?v=1776418543'},
+  {id:'18',brand:'Other',name:'Roman Dial Moissanite Mens Luxury Watches',ref:'OTH-C18',price:'$95000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_4de4bf8b-f548-4ab4-bf61-b8aeb1c5c29a.webp?v=1776409582'},
+  {id:'19',brand:'Other',name:'Moissanite Watch with Rubber Strap',ref:'OTH-C19',price:'$105500.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/7_18f3ee7a-b831-421a-a2a6-33d8b131a3ba.jpg?v=1778154977'},
+  {id:'20',brand:'Other',name:'Santos Moissanite Diamond Watch',ref:'OTH-C20',price:'$105500.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/11_2c76a994-0c3a-4404-9840-c75494d9cf1f.jpg?v=1778155186'},
+  {id:'21',brand:'Other',name:'Men\'s Moissanite Watches for Sale',ref:'OTH-C21',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Men_s_Moissanite_Watches_for_Sale.jpg?v=1775036719'},
+  {id:'22',brand:'Other',name:'Bust Down Moissanite Watch - Swiss Made',ref:'OTH-C22',price:'$115100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Bust_Down_Moissanite_Watch_-_Swiss_Made.jpg?v=1775035620'},
+  {id:'23',brand:'Other',name:'Red Dial Moissanite Watch | 41 MM',ref:'OTH-C23',price:'$104600.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Red_Dial_Moissanite_Watch.jpg?v=1775038183'},
+  {id:'24',brand:'Other',name:'High Quality Moissanite Watch',ref:'OTH-C24',price:'$119900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/High_Quality_Moissanite_Watch.jpg?v=1775035981'},
+  {id:'25',brand:'Other',name:'Moissanite Diamond Watch',ref:'OTH-C25',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Diamond_Watch.jpg?v=1775037242'},
+  {id:'26',brand:'Other',name:'Roman Dial Moissanite Presidential Watch For Men | 41 MM',ref:'OTH-C26',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Roman_Dial_Moissanite_Presidential_Watch_For_Men.jpg?v=1775039159'},
+  {id:'27',brand:'Rolex',name:'Datejust Moissanite Red Dial Iced Out Watches',ref:'ROL-C27',price:'$94100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_eb56aaf3-7862-4647-a672-243c5c444b8e.webp?v=1776413940'},
+  {id:'28',brand:'Other',name:'VVS Moissanite Diamond Watch',ref:'OTH-C28',price:'$105500.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/3_bfbd374a-add3-4f28-b9bb-3b3684e8d7a6.jpg?v=1778154826'},
+  {id:'29',brand:'Other',name:'Moissanite Watch Mens',ref:'OTH-C29',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Watch_Mens.jpg?v=1775037813'},
+  {id:'30',brand:'Other',name:'Iced-out moissanite men\'s watches with thorn crown design',ref:'OTH-C30',price:'$72000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/4_d0de6b35-65df-49f4-b958-babb9c52f2c2.webp?v=1776415075'},
+  {id:'31',brand:'Other',name:'Cheap Moissanite Watch',ref:'OTH-C31',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Watch_0003_Firefly20260505094615.jpg?v=1777970727'},
+  {id:'32',brand:'Other',name:'Moissanite Skeleton Watch',ref:'OTH-C32',price:'$100700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Skeleton_Watch.jpg?v=1775037362'},
+  {id:'33',brand:'AP',name:'Iced out AP Moissanite Watch',ref:'AP-C33',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Iced_out_AP_Moissanite_Watch.jpg?v=1775036095'},
+  {id:'34',brand:'Other',name:'Iced Out Moissanite Watch',ref:'OTH-C34',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Iced_Out_Moissanite_Watch_d4649112-6e88-4f1c-9bc0-4de834f6ab89.jpg?v=1775042249'},
+  {id:'35',brand:'Other',name:'VVS Moissanite Watch',ref:'OTH-C35',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/VVS_Moissanite_Watch.jpg?v=1775041169'},
+  {id:'36',brand:'Other',name:'Bust Down Rubber Band Moissanite Watch',ref:'OTH-C36',price:'$91100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Bust_Down_Rubber_Band_Moissanite_Watch.jpg?v=1775035741'},
+  {id:'37',brand:'AP',name:'Moissanite Diamond Ap Watch | 41MM | Yellow Gold',ref:'AP-C37',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Diamond_Ap_Watch.jpg?v=1775037127'},
+  {id:'38',brand:'Other',name:'Roman Dial Date Just Moissanite Watch for Men | 41 MM',ref:'OTH-C38',price:'$97900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/RomanDialDateJustMoissaniteWatchforMen41MM.jpg?v=1775214911'},
+  {id:'39',brand:'Other',name:'Arabic Yellow Dial Black Leather Belt Moissanite Watch | 41 MM',ref:'OTH-C39',price:'$86300.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/ArabicYellowDialBlackLeatherBeltMoissanite.jpg?v=1775214991'},
+  {id:'40',brand:'Rolex',name:'Datejust Full Iced Out Moissanite Watch',ref:'ROL-C40',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/DatejustFullIcedOutMoissaniteWatch.jpg?v=1775215057'},
+  {id:'41',brand:'Other',name:'Arabic White Dial Green Leather Belt Moissanite Watch | 41 MM',ref:'OTH-C41',price:'$86300.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Arabic_White_Dial_Green_Leather_Belt_Moissanite_Watch.jpg?v=1775215507'},
+  {id:'42',brand:'Other',name:'Arabic Dial Moissanite Watch For Women | 36 MM | Yellow Gold Tone',ref:'OTH-C42',price:'$94000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Arabic_Dial_Moissanite_Watch_For_Women___36_MM___Yellow_Gold_Tone.jpg?v=1775215813'},
+  {id:'43',brand:'AP',name:'Two Tone AP Women Moissanite Watch | 36 MM | Rose Gold Tone',ref:'AP-C43',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Two_Tone_AP_Women_Moissanite_Watch_36_MM_Rose_Gold_Tone.jpg?v=1775215952'},
+  {id:'44',brand:'Other',name:'Jubilee Style Date Just Moissanite Watch | 36 MM | Yellow Gold Tone',ref:'OTH-C44',price:'$94000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Jubilee_Style_Date_Just_Moissanite_Watch.jpg?v=1775216058'},
+  {id:'45',brand:'AP',name:'Two Tone AP Women Moissanite Watch | 36 MM',ref:'AP-C45',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Two_Tone_AP_Women_Moissanite_Watch.jpg?v=1775216160'},
+  {id:'46',brand:'AP',name:'AP Royal Oak Moissanite Watch | 41 Mm | Rose Gold Tone',ref:'AP-C46',price:'$104600.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/AP_Royal_Oak_Moissanite_Watch.jpg?v=1775216321'},
+  {id:'47',brand:'Other',name:'Roman Dial Moissanite Presidential Watch | 41 MM | Rose Gold Tone',ref:'OTH-C47',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Roman_Dial_Moissanite_Presidential_Watch.jpg?v=1775216453'},
+  {id:'48',brand:'Other',name:'Purple Dial Moissanite Watch | 41 MM',ref:'OTH-C48',price:'$100700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Purple_Dial_Moissanite_Watch.jpg?v=1775216562'},
+  {id:'49',brand:'Other',name:'Arabic White Dial Blue Leather Belt Moissanite Watch | 41 MM',ref:'OTH-C49',price:'$86300.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/ArabicWhiteDialBlueLeatherBeltMoissanite.jpg?v=1775215297'},
+  {id:'50',brand:'AP',name:'Moissanite Diamond Ap Watch | 41MM | Rose Gold Tone',ref:'AP-C50',price:'$95900.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Diamond_Ap_Watch_2.jpg?v=1775275366'},
+  {id:'51',brand:'Other',name:'Moissanite Presidential Watch For Men | 41 MM',ref:'OTH-C51',price:'$95000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Moissanite_Presidential_Watch_For_Men.jpg?v=1775275513'},
+  {id:'52',brand:'AP',name:'AP Moissanite Hip Hop Watch | 41 MM | Yellow Gold Tone',ref:'AP-C52',price:'$100700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/AP_Moissanite_Hip_Hop_Watch.jpg?v=1775275631'},
+  {id:'53',brand:'Other',name:'Arabic Dial Moissanite Watch For Women | 36 MM',ref:'OTH-C53',price:'$94000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Watch_0003_Firefly20260505145119.jpg?v=1777981576'},
+  {id:'54',brand:'Other',name:'Blue Face Dial Moissanite Diamond Watch | 41MM',ref:'OTH-C54',price:'$105500.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Blue_Face_Dial_Moissanite_Diamond_Watch.jpg?v=1775277940'},
+  {id:'55',brand:'Other',name:'Oyster Perpetual Date Just Black Dial Plain Watch In Yellow Gold',ref:'OTH-C55',price:'$47100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Oyster_Perpetual_Date_Just_Black_Dial_Plain_Watch_In_Yellow_Gold.jpg?v=1775278096'},
+  {id:'56',brand:'Other',name:'Oyster Perpetual Day-Date Sky Blue Dial Plain Watch In Yellow Gold',ref:'OTH-C56',price:'$56700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Oyster_Perpetual_Day-Date_Sky_Blue_Dial_Plain_Watch_In_Yellow_Gold.jpg?v=1775795792'},
+  {id:'57',brand:'Other',name:'Oyster Perpetual Day-Date Black Dial Plain Watch In Yellow Gold',ref:'OTH-C57',price:'$56700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Oyster_Perpetual_Day-Date_Black_Dial_Plain_Watch_In_Yellow_Gold_3849b3f7-c504-4c96-83ec-8b2a763e6b29.jpg?v=1777006407'},
+  {id:'58',brand:'Other',name:'Day-Date Sky Blue Dial  Stainless Steel Plain Watch | 41 MM',ref:'OTH-C58',price:'$47100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Day-Date_Sky_Blue_Dial_Stainless_Steel_Plain_Watch___41_MM.jpg?v=1775796450'},
+  {id:'59',brand:'Other',name:'Oyster Perpetual Day-Date White Dial Plain Watch In Yellow Gold',ref:'OTH-C59',price:'$47100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Oyster_Perpetual_Day-Date_White_Dial_Plain_Watch_In_Yellow_Gold.jpg?v=1775278425'},
+  {id:'60',brand:'Other',name:'Day-Date Blue Dial Stainless Steel Plain Watch',ref:'OTH-C60',price:'$47100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/Day-Date_Blue_Dial_Stainless_Steel_Plain_Watch.jpg?v=1775279114'},
+  {id:'61',brand:'Other',name:'Primaluna Women\'s Automatic Watch',ref:'OTH-C61',price:'$43200.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_0bea0d50-4716-4ec8-a269-9b1c31f110db.webp?v=1777015233'},
+  {id:'62',brand:'Other',name:'Black Dial Stainless Steel Ladies Watch',ref:'OTH-C62',price:'$46100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_aadae977-2060-43e1-b944-01bcf26fd7d4.webp?v=1777015175'},
+  {id:'63',brand:'Other',name:'Constellation Quartz Ladies Luxury Watches',ref:'OTH-C63',price:'$49000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_e91b0e4a-0c6b-42b2-a823-05afe75f15f5.webp?v=1777015066'},
+  {id:'64',brand:'Other',name:'Greca twist Black Dial Analogue watch for women',ref:'OTH-C64',price:'$49000.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_d3806304-fee2-4f32-b62d-48a1f8249761.webp?v=1776510229'},
+  {id:'65',brand:'Other',name:'Purple Dial Plain Constellation Watch For Women',ref:'OTH-C65',price:'$52700.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_afcbe4b1-76d6-4800-8eaf-e92a2819ae16.webp?v=1776669274'},
+  {id:'66',brand:'Other',name:'Blue Dial plain constellation watches for women',ref:'OTH-C66',price:'$47100.00',material:'Stainless Steel',diamond:'VVS Moissanite',status:'available',featured:'0',img:'https://cdn.shopify.com/s/files/1/0576/1892/3581/files/1_86d61c1d-3576-43b9-a702-aa6787253ee5.webp?v=1777007438'}
+];
+
+var curFilter='all', curImg='', editId=null;
+var exportPdfName='Jewelpa_Diamond_Watch_Catalog.pdf';
+var exportPdfTitle='Jewelpa Diamond Watch Catalog';
+
+function saveBlobAsFile(blob,fileName){
+  if(window.navigator && typeof window.navigator.msSaveOrOpenBlob==='function'){
+    window.navigator.msSaveOrOpenBlob(blob,fileName);
+    return;
+  }
+  var url=URL.createObjectURL(blob);
+  var link=document.createElement('a');
+  link.href=url;
+  link.download=fileName;
+  link.rel='noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+
+function loadWatches() {
+  var g=document.getElementById('catalog-grid');
+  if(g) g.innerHTML='<div class="empty"><h3>Loading watches...</h3><p>Syncing from cloud</p></div>';
+  fetch(blobUrl, { headers: { 'Accept': 'application/json' } })
+    .then(function(r){return r.json()})
+    .then(function(d){
+      watches = Array.isArray(d) && d.length > 0 ? d : defaultWatches;
+      renderCatalog();
+    })
+    .catch(function(e){
+      console.warn("Cloud sync blocked (likely opened via file://). Falling back to Local Storage.");
+      watches = JSON.parse(localStorage.getItem('jwlp4') || '[]');
+      if (!watches.length) watches = defaultWatches;
+      renderCatalog();
+      showToast('Offline Mode: Using local storage (deploy to web to enable cloud sync)');
+    });
+}
+
+function sv(){
+  localStorage.setItem('jwlp4', JSON.stringify(watches));
+  fetch(blobUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(watches)
+  }).catch(function(e){ 
+    console.warn('Cloud sync failed, saved locally instead.'); 
+  });
+}
+
+loadWatches();
+
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('view-'+tab).classList.add('active');
+  if(tab==='pdf') buildPreview();
+}
+
+function filterBrand(b,btn){
+  curFilter=b;
+  document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active')});
+  btn.classList.add('active');
+  renderCatalog();
+}
+
+/* ── CATALOG RENDER ── */
+function renderCatalog(){
+  var list=curFilter==='all'?watches:watches.filter(function(w){return w.brand===curFilter});
+  document.getElementById('catalog-stats').textContent=list.length+' Timepiece'+(list.length!==1?'s':'');
+  var g=document.getElementById('catalog-grid');
+  if(!list.length){g.innerHTML='<div class="empty"><h3>No timepieces yet</h3><p>Click Add Watch to start</p></div>';return;}
+  g.innerHTML=list.map(function(w){return(
+    '<div class="watch-card'+(w.featured==="1"?' featured':'')+'">'+
+    (w.img
+      ?'<div class="card-img"><img src="'+w.img+'" alt="'+w.name+'"></div>'
+      :'<div class="card-img-ph"><svg width="52" height="52" viewBox="0 0 64 64" fill="none"><polygon points="32,5 57,18 57,46 32,59 7,46 7,18" stroke="#C9A84C" stroke-width="1.4" fill="none"/><circle cx="32" cy="32" r="9" stroke="#C9A84C" stroke-width="1.4" fill="none"/></svg></div>')+
+    '<div class="card-body">'+
+      '<div class="card-brand">'+w.brand+'</div>'+
+      '<div class="card-name">'+w.name+'</div>'+
+      '<div class="card-ref">'+(w.ref||'&mdash;')+(w.diamond?' &middot; '+w.diamond:'')+'</div>'+
+      '<div class="card-footer">'+
+        '<div class="card-price">'+w.price+'</div>'+
+        '<div class="card-acts">'+
+          '<button class="icon-btn edit" title="Edit" onclick="editWatch(\''+w.id+'\')">&#9998;</button>'+
+          '<button class="icon-btn" title="Delete" onclick="delWatch(\''+w.id+'\')">&#215;</button>'+
+        '</div>'+
+      '</div>'+
+    '</div></div>'
+  );}).join('');
+}
+
+/* ── BADGE ── */
+function badge(s){
+  if(s==='available') return '<span class="badge-a">In Stock</span>';
+  if(s==='reserved')  return '<span class="badge-r">Reserved</span>';
+  return '<span class="badge-s">Sold</span>';
+}
+
+/* ── WATCH CELL for slide ── */
+function cell(w){
+  var img=w.img
+    ?'<div class="sl-item-img"><img crossorigin="anonymous" src="'+w.img+'" alt="'+w.name+'" onerror="this.hidden=true;"></div>'
+    :'<div class="sl-item-img"><svg width="56" height="56" viewBox="0 0 64 64" fill="none"><polygon points="32,5 57,18 57,46 32,59 7,46 7,18" stroke="#C9A84C" stroke-width="1.2" fill="none" opacity=".4"/><circle cx="32" cy="32" r="9" stroke="#C9A84C" stroke-width="1.2" fill="none" opacity=".4"/></svg></div>';
+  var refs=[w.ref,w.material,w.diamond].filter(Boolean).join(' \u00b7 ');
+  return '<div class="sl-item">'+img+
+    '<div class="sl-item-body">'+
+      '<div class="sl-item-brand">'+w.brand+'</div>'+
+      '<div class="sl-item-name">'+w.name+'</div>'+
+      '<div class="sl-item-ref">'+refs+'</div>'+
+      '<div class="sl-item-foot"><div class="sl-item-price">'+w.price+'</div>'+badge(w.status)+'</div>'+
+    '</div></div>';
+}
+
+/* ── BUILD SLIDE PREVIEW ── */
+function buildPreview(){
+  var wrap=document.getElementById('pdf-pages-wrap');
+  var yr=new Date().getFullYear();
+  var brands=[];watches.forEach(function(w){if(brands.indexOf(w.brand)<0)brands.push(w.brand)});
+  var html='';
+
+  /* COVER SLIDE */
+  html+='<div class="slide sl-cover">'+
+    '<div class="sl-cover-stripe"></div>'+
+    '<div class="sl-cover-glow"></div>'+
+    '<div class="sl-cover-border"></div>'+
+    '<div class="sl-cover-border2"></div>'+
+    '<div class="sl-cover-corner tl"></div>'+
+    '<div class="sl-cover-corner tr"></div>'+
+    '<div class="sl-cover-corner bl"></div>'+
+    '<div class="sl-cover-corner br"></div>'+
+    '<div class="sl-cover-inner">'+
+      
+      '<div class="sl-cover-est">Est. in Surat &mdash; Gujarat, India</div>'+
+      '<div class="sl-cover-title">Jewelpa</div>'+
+      '<div class="sl-cover-sub">Diamond &amp; Luxury Timepieces</div>'+
+      '<div class="sl-cover-rule"></div>'+
+      '<div class="sl-cover-desc">Exclusive Diamond Watch Collection</div>'+
+      '<div class="sl-cover-rule"></div>'+
+      '<div class="sl-cover-brands">'+brands.slice(0,6).join(' &middot; ')+(brands.length>6?' &middot; More':'')+'</div>'+
+    '</div>'+
+    '<div class="sl-cover-foot">'+yr+' Collection &mdash; Catalog</div>'+
+  '</div>';
+
+  /* WATCH SLIDES — 4 per slide */
+  for(var i=0;i<watches.length;i+=4){
+    var sl=watches.slice(i,i+4);
+    var pn=Math.floor(i/4)+2;
+    html+='<div class="slide sl-inner">'+
+      '<div class="sl-side-stripe"></div>'+
+      '<div class="sl-header"><div class="sl-logo">Jewelpa</div><div class="sl-pnum">Diamond Collection</div></div>'+
+      '<div class="sl-header-divider"><span></span></div>'+
+      '<div class="sl-hed"><div class="sl-hed-title">Diamond Timepieces</div><div class="sl-hed-bar">Certified Luxury &mdash; '+watches.length+' Exclusive Pieces</div></div>'+
+      '<div class="sl-grid">'+sl.map(cell).join('')+'</div>'+  
+    '</div>';
+  }
+
+  /* BACK COVER SLIDE */
+  html+='<div class="slide sl-back">'+
+    '<div class="sl-cover-stripe"></div>'+
+    '<div class="sl-back-glow"></div>'+
+    '<div class="sl-cover-border"></div>'+
+    '<div class="sl-cover-corner tl"></div>'+
+    '<div class="sl-cover-corner tr"></div>'+
+    '<div class="sl-cover-corner bl"></div>'+
+    '<div class="sl-cover-corner br"></div>'+
+    '<div class="sl-back-logo" style="position:relative;z-index:2">Jewelpa</div>'+
+    '<div class="sl-back-tag" style="position:relative;z-index:2">Diamonds are forever. So is our craftsmanship.</div>'+
+    '<div class="sl-back-rule" style="position:relative;z-index:2"></div>'+
+    '<div class="sl-back-contacts" style="position:relative;z-index:2">'+
+      '<div class="sl-back-col">'+
+        '<div class="sl-back-row"><b>Location</b> Surat, Gujarat, India</div>'+
+        '<div class="sl-back-row"><b>Phone</b> +91 73528 15367</div>'+
+      '</div>'+
+      '<div class="sl-back-divider"></div>'+
+      '<div class="sl-back-col">'+
+        '<div class="sl-back-row"><b>Email</b> jewelpa07@gmail.com</div>'+
+        '<div class="sl-back-row"><b>Web</b>https://jewelpa.com/</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="sl-back-copy">&copy; '+yr+' Jewelpa &middot; All rights reserved</div>'+
+  '</div>';
+
+  wrap.innerHTML=html;
+}
+
+/* ── DOWNLOAD PDF ── */
+async function downloadPDF(){
+  var btn=document.getElementById('dl-btn');
+  var originalText=btn.innerHTML;
+  btn.textContent='... Generating PDF';
+  btn.disabled=true;
+
+  // Save active tab state
+  var activeTabBtn=document.querySelector('.tab-btn.active');
+  var activeView=document.querySelector('.view.active');
+
+  // Switch to PDF Preview tab to render elements
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  var pdfTabBtn=document.querySelectorAll('.tab-btn')[1];
+  var pdfView=document.getElementById('view-pdf');
+  pdfTabBtn.classList.add('active');
+  pdfView.classList.add('active');
+
+  buildPreview();
+  showToast('Generating high-quality PDF...');
+
+  // CRITICAL FIX: Pre-convert all images to base64 Data URLs to bypass html2canvas completely
+  var imgs = Array.from(document.querySelectorAll('#pdf-pages-wrap img'));
+  await Promise.all(imgs.map(async function(img) {
+    var originalSrc = img.src;
+    if (originalSrc.startsWith('data:')) return;
+    try {
+      var res = await fetch(originalSrc);
+      if (!res.ok) throw new Error('Fetch failed');
+      var blob = await res.blob();
+      var reader = new FileReader();
+      await new Promise(function(resolve, reject) {
+        reader.onloadend = function() {
+          img.removeAttribute('crossorigin');
+          img.src = reader.result;
+          resolve();
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      
+      // Wait for browser to process the base64 string
+      await new Promise(function(resolve) {
+        if (img.complete && img.naturalWidth > 0) resolve();
+        else {
+          img.onload = resolve;
+          img.onerror = resolve;
+        }
+      });
+    } catch(e) {
+      console.warn("Failed to load image for PDF:", originalSrc, e);
+      if (img.parentNode) img.parentNode.removeChild(img);
+    }
+  }));
+
+  // Final sanity check: remove any 0x0 images
+  document.querySelectorAll('#pdf-pages-wrap img').forEach(function(img) {
+    if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+      if (img.parentNode) img.parentNode.removeChild(img);
+    }
+  });
+
+  // Short delay for DOM layout
+  await new Promise(function(resolve){setTimeout(resolve, 300)});
+
+  try{
+    const { jsPDF } = window.jspdf;
+    var pdf=new jsPDF({
+      orientation:'landscape',
+      unit:'px',
+      format:[1280,720],
+      compress:true
+    });
+
+    var slides=document.querySelectorAll('#pdf-pages-wrap .slide');
+    if(slides.length===0){
+      throw new Error('No slides found to generate PDF');
+    }
+
+    for(var i=0;i<slides.length;i++){
+      var slide=slides[i];
+      var canvas=await html2canvas(slide,{
+        scale:2, // High resolution (2560x1440)
+        useCORS:true,
+        logging:false,
+        backgroundColor:null
+      });
+      var imgData=canvas.toDataURL('image/jpeg',0.95);
+      if(i>0) pdf.addPage([1280,720],'landscape');
+      pdf.addImage(imgData,'JPEG',0,0,1280,720);
+    }
+
+    pdf.save(exportPdfName);
+    showToast('Catalog PDF downloaded!');
+  }catch(err){
+    console.error('PDF export failed',err);
+    alert('PDF export failed: '+err.message);
+    showToast('PDF export failed');
+  }finally{
+    // Restore tab state
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+    if(activeTabBtn && activeView){
+      activeTabBtn.classList.add('active');
+      activeView.classList.add('active');
+    }else{
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('view-catalog').classList.add('active');
+    }
+    btn.innerHTML=originalText;
+    btn.disabled=false;
+  }
+}
+
+function printCatalog(){
+  var activeTabBtn=document.querySelector('.tab-btn.active');
+  var activeView=document.querySelector('.view.active');
+
+  // Switch to PDF Preview tab to render elements
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  var pdfTabBtn=document.querySelectorAll('.tab-btn')[1];
+  var pdfView=document.getElementById('view-pdf');
+  pdfTabBtn.classList.add('active');
+  pdfView.classList.add('active');
+
+  buildPreview();
+
+  var prevTitle=document.title;
+  document.title=exportPdfTitle;
+
+  var restore=function(){
+    document.title=prevTitle;
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+    if(activeTabBtn && activeView){
+      activeTabBtn.classList.add('active');
+      activeView.classList.add('active');
+    }else{
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('view-catalog').classList.add('active');
+    }
+    window.removeEventListener('afterprint',restore);
+  };
+
+  window.addEventListener('afterprint',restore);
+
+  // Trigger browser print dialog
+  setTimeout(function(){
+    window.print();
+  },100);
+}
+
+/* ── MODAL ── */
+function openAddModal(){
+  editId=null;curImg='';
+  document.getElementById('modal-title').textContent='Add New Watch';
+  ['edit-id','f-name','f-ref','f-price','f-material','f-diamond'].forEach(function(id){document.getElementById(id).value=''});
+  document.getElementById('f-brand').value='';
+  document.getElementById('f-status').value='available';
+  document.getElementById('f-featured').value='0';
+  document.getElementById('img-prev').style.display='none';
+  document.getElementById('upload-ph').style.display='block';
+  document.getElementById('img-upload').value='';
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+function editWatch(id){
+  var w=watches.find(function(x){return x.id===id});if(!w)return;
+  editId=id;curImg=w.img||'';
+  document.getElementById('modal-title').textContent='Edit Watch';
+  document.getElementById('edit-id').value=id;
+  document.getElementById('f-brand').value=w.brand;
+  document.getElementById('f-name').value=w.name;
+  document.getElementById('f-ref').value=w.ref||'';
+  document.getElementById('f-price').value=w.price;
+  document.getElementById('f-material').value=w.material||'';
+  document.getElementById('f-diamond').value=w.diamond||'';
+  document.getElementById('f-status').value=w.status;
+  document.getElementById('f-featured').value=w.featured||'0';
+  if(w.img){document.getElementById('img-prev').src=w.img;document.getElementById('img-prev').style.display='block';document.getElementById('upload-ph').style.display='none';}
+  else{document.getElementById('img-prev').style.display='none';document.getElementById('upload-ph').style.display='block';}
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-backdrop').classList.remove('open')}
+function handleImg(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){curImg=ev.target.result;document.getElementById('img-prev').src=curImg;document.getElementById('img-prev').style.display='block';document.getElementById('upload-ph').style.display='none';};
+  r.readAsDataURL(f);
+}
+function saveWatch(){
+  var brand=document.getElementById('f-brand').value.trim();
+  var name=document.getElementById('f-name').value.trim();
+  var price=document.getElementById('f-price').value.trim();
+  if(!brand||!name||!price){showToast('Please fill Brand, Name and Price');return;}
+  var w={id:editId||Date.now().toString(),brand,name,
+    ref:document.getElementById('f-ref').value.trim(),price,
+    material:document.getElementById('f-material').value.trim(),
+    diamond:document.getElementById('f-diamond').value.trim(),
+    status:document.getElementById('f-status').value,
+    featured:document.getElementById('f-featured').value,img:curImg};
+  if(editId){var idx=watches.findIndex(function(x){return x.id===editId});if(idx!==-1)watches[idx]=w;showToast('Watch updated');}
+  else{watches.push(w);showToast('Watch added!');}
+  sv();closeModal();renderCatalog();
+}
+function delWatch(id){
+  if(!confirm('Remove this timepiece?'))return;
+  watches=watches.filter(function(w){return w.id!==id});
+  sv();renderCatalog();showToast('Watch removed');
+}
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
+}
+renderCatalog();
+</script>
+</body>
+</html>
